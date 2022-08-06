@@ -1,11 +1,14 @@
+import os
+
 import folium
-from folium.plugins import Fullscreen, LocateControl
-from folium.features import LatLngPopup
 from flask import Flask, render_template
+from folium.features import LatLngPopup
+from folium.plugins import Fullscreen, LocateControl
+
 from forms import LocationForm
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'mysecretkey'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
 
 @app.route('/about/')
@@ -14,7 +17,7 @@ def about():
     return render_template('about.html')
 
 
-@app.route('/')
+@app.route('/', methods=('GET', 'POST'))
 def index():
     """Index page."""
     form = LocationForm()
