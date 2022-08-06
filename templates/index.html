@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+    {% block content %}
+        <div class="row">
+            <div class="col-3">
+                <h1 class="h2">Добавить место</h1>
+                <p>
+                    {{ form.title }}
+                    {{ form.count }}
+                    {{ form.color }}
+                </p>
+            </div>
+            <div class="col-9">{{ maps | safe }}</div>
+        </div>
+    {% endblock %}
