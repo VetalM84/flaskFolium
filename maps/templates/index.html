@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-3">
+            <h1 class="h3">Добавить место</h1>
+            <form method="POST" action="" enctype="multipart/form-data">
+                {{ form.csrf_token() }}
+                <div class="form-group">
+                    {{ form.coordinates.label(class="form-control-label") }}
+                    {{ form.coordinates(class="form-control") }}
+                    {% if form.coordinates.errors %}
+                        {% for error in form.coordinates.errors %}
+                            <p><span class="text-danger">{{ error }}</span></p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.comment.label(class="form-control-label") }}
+                    {{ form.comment(class="form-control") }}
+                    {% if form.comment.errors %}
+                        {% for error in form.comment.errors %}
+                            <p><span class="text-danger">{{ error }}</span></p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.color.label(class="form-control-label") }}
+                    {{ form.color(class="form-control") }}
+                    {% if form.color.errors %}
+                        {% for error in form.color.errors %}
+                            <p><span class="text-danger">{{ error }}</span></p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <p>{{ form.submit(class="btn btn-primary") }}</p>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-9">{{ maps | safe }}</div>
+    </div>
+{% endblock %}
