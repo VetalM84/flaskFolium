@@ -2,7 +2,7 @@
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField
-from wtforms.validators import DataRequired, Length, ValidationError
+from wtforms.validators import DataRequired, Length
 
 
 class LocationForm(FlaskForm):
@@ -21,9 +21,3 @@ class LocationForm(FlaskForm):
         "Событие", choices=[("red", "Вручают"), ("green", "Никого нет")]
     )
     submit = SubmitField("Добавить")
-
-    # def validate_coordinates(self, coordinates):
-    #     # title = Book.query.filter_by(title=title.data).first()
-    #     print(coordinates.data)
-    #     if str(coordinates.data).find(",,") == -1:
-    #         raise ValidationError('Ошибка. Неудалось распознать координаты.')
