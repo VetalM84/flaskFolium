@@ -103,9 +103,13 @@ def parse_coordinates(coordinates: str):
 
 def add_marker(current_map: object, location, color: str, popup: str):
     """Add a marker to the map."""
-    folium.Marker(
+    folium.CircleMarker(
         location=location,
-        icon=folium.Icon(color=color, icon="exclamation-sign"),
+        # icon=folium.Icon(color=color, icon="exclamation-sign"),
         popup=popup,
         tooltip=popup,
+        radius=9,
+        fill_color=color,
+        color="gray",
+        fill_opacity=0.6,
     ).add_to(current_map)
