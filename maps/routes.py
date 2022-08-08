@@ -1,12 +1,12 @@
 """Store all routes."""
-
+import re
 from datetime import datetime
 
 import folium
-import re
 from flask import render_template, request, flash
+from folium import Popup
 from folium.features import LatLngPopup
-from folium.plugins import Fullscreen, LocateControl, Search
+from folium.plugins import Fullscreen, LocateControl, MarkerCluster
 
 from maps import app
 from maps.forms import LocationForm
@@ -33,7 +33,18 @@ def index():
         auto_start=False, position="topright", strings={"title": "Где я"}
     ).add_to(current_map)
     LatLngPopup().add_to(current_map)
-    # Search().add_to(current_map)
+    marker_cluster = MarkerCluster().add_to(current_map)
+    # folium.LayerControl().add_to(current_map)
+
+    # for testing purposes'
+    # marker_locs = [[random.uniform(44, 52), random.uniform(22, 40)] for x in range(400)]
+    # for pnt in marker_locs:
+    #     folium.Marker(
+    #         location=[pnt[0], pnt[1]],
+    #         popup=f"pnt - {pnt[0]}, {pnt[1]}",
+    #         icon=folium.Icon(color="red", icon="info-sign"),
+    #         tooltip="tooltip",
+    #     ).add_to(marker_cluster)
 
     if request.method == "POST" and form.validate_on_submit():
         location = form.coordinates.data
@@ -43,13 +54,14 @@ def index():
         parsed_coordinates = parse_coordinates(coordinates=location)
 
         add_marker(
-            current_map=current_map,
+            current_map=marker_cluster,
             location=[
                 parsed_coordinates[0],
                 parsed_coordinates[1],
             ],
             color=color,
-            popup=datetime.now().strftime("%H:%M"),
+            popup=Popup(datetime.now().strftime("%H:%M") + ", </br>" + str(parsed_coordinates), parse_html=False),
+            tooltip=datetime.now().strftime("%H:%M"),
         )
 
     return render_template("index.html", form=form, maps=current_map._repr_html_())
@@ -78,13 +90,11 @@ def parse_coordinates(coordinates: str):
     return coordinates_cleaned.split(",")
 
 
-def add_marker(
-    current_map: object, location, color: str, popup: str
-):
+def add_marker(current_map: object, location, color: str, popup: str, tooltip: str):
     """Add a marker to the map."""
     folium.Marker(
         location=location,
-        icon=folium.Icon(color=color, icon="info-sign"),
+        icon=folium.Icon(color=color, icon="exclamation-sign"),
         popup=popup,
-        tooltip=popup,
+        tooltip=tooltip,
     ).add_to(current_map)
