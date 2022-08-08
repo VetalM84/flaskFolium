@@ -62,36 +62,41 @@ def index():
 
         parsed_coordinates = parse_coordinates(coordinates=location)
 
-        add_marker(
-            current_map=marker_cluster,  # add markers on cluster layer
-            location=[
-                parsed_coordinates[0],
-                parsed_coordinates[1],
-            ],
-            color=color,
-            popup=datetime.now().strftime("%H:%M"),
-        )
+        try:
+            add_marker(
+                current_map=marker_cluster,  # add markers on cluster layer
+                location=[
+                    parsed_coordinates[0],
+                    parsed_coordinates[1],
+                ],
+                color=color,
+                popup=datetime.now().strftime("%H:%M"),
+            )
+        except (ValueError, TypeError) as e:
+            flash("Ошибка. Неудалось распознать координаты или они не верны.")
+            print(e)
+        except IndexError as e:
+            flash("Ошибка. Не хватает координат.")
+            print(e)
 
     return render_template("index.html", form=form, maps=current_map._repr_html_())
 
 
 def parse_coordinates(coordinates: str):
     """Parse coordinates gotten from html form. Return a list of coordinates."""
-    coordinates_list = []
-    for item in coordinates.strip():
-        if item in (",", ".", " ") or item.isdigit():
-            coordinates_list.append(item)
+    coordinates_cleaned = "".join(
+        e for e in coordinates.strip() if e.isdigit() or e in (",", ".", " ")
+    )
     coordinates_cleaned = (
-        "".join(coordinates_list)
-        .strip()
+        coordinates_cleaned.strip()
         .replace(", ", ",")
         .replace("  ", ",")
         .replace(" ", ",")
     )
     for item in coordinates_cleaned.split(","):
         if re.fullmatch(r"\d{2}\.\d{2,}", item) is None:
-            flash("Ошибка. Неудалось распознать координаты или они не верны.")
-            break
+            # flash("Ошибка. Неудалось распознать координаты или они не верны.")
+            return False
     print(coordinates_cleaned)
     return coordinates_cleaned.split(",")
 
