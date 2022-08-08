@@ -60,7 +60,10 @@ def index():
                 parsed_coordinates[1],
             ],
             color=color,
-            popup=Popup(datetime.now().strftime("%H:%M") + ", </br>" + str(parsed_coordinates), parse_html=False),
+            popup=Popup(
+                datetime.now().strftime("%H:%M") + ", </br>" + str(parsed_coordinates),
+                parse_html=False,
+            ),
             tooltip=datetime.now().strftime("%H:%M"),
         )
 
@@ -68,7 +71,7 @@ def index():
 
 
 def parse_coordinates(coordinates: str):
-    """Parse coordinates gotten from html form. Return a tuple of coordinates."""
+    """Parse coordinates gotten from html form. Return a list of coordinates."""
     coordinates_list = []
     for item in coordinates.strip():
         if item in (",", ".", " ") or item.isdigit():
@@ -85,12 +88,10 @@ def parse_coordinates(coordinates: str):
             flash("Ошибка. Неудалось распознать координаты или они не верны.")
             break
     print(coordinates_cleaned)
-    print(float(coordinates_cleaned[0]))
-    print(float(coordinates_cleaned[1]))
     return coordinates_cleaned.split(",")
 
 
-def add_marker(current_map: object, location, color: str, popup: str, tooltip: str):
+def add_marker(current_map: object, location, color: str, popup: Popup, tooltip: str):
     """Add a marker to the map."""
     folium.Marker(
         location=location,
