@@ -4,4 +4,5 @@ folium==0.12.1.post1
 WTForms==3.0.1
 gunicorn
 flask_sqlalchemy
-SQLAlchemy~=1.4.39
+SQLAlchemy==1.4.39
+psycopg2==2.9.3
