@@ -1,7 +1,6 @@
 """Models for the maps' app."""
-from datetime import datetime
 
-from maps import app, db
+from maps import db
 from dataclasses import dataclass
 
 
@@ -9,7 +8,7 @@ from dataclasses import dataclass
 class Report(db.Model):
     """Report model. With ability to export to JSON."""
 
-    __tablename__ = 'Reports'
+    __tablename__ = "Reports"
 
     id: int
     latitude: float
@@ -24,7 +23,7 @@ class Report(db.Model):
     longitude = db.Column(db.Float, nullable=False)
     color = db.Column(db.String(20), nullable=False)
     comment = db.Column(db.String(100), nullable=True)
-    created_at = db.Column(db.DateTime(timezone=True), default=datetime.now())
+    created_at = db.Column(db.DateTime(timezone=True), default=db.func.now())
     ip = db.Column(db.String(128), nullable=True)
 
     def __repr__(self):
