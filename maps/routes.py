@@ -130,8 +130,8 @@ def add_marker(current_map: object, location, color: str, popup: str):
 
 def get_all_markers():
     """Retrieve all records from DB with date == today."""
-    # return Report.query.filter(Report.created_at.strftime("%Y-%m-%d") == datetime.now().date()).all()
-    return Report.query.all()
+    today_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
+    return Report.query.filter(Report.created_at >= today_datetime).all()
 
 
 def add_report_to_db(
