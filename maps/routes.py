@@ -142,6 +142,9 @@ def add_report_to_db(
         )
         db.session.add(report)
         db.session.commit()
+    except IndexError as e:
+        flash("Ошибка. Не хватает координат.")
+        print(e)
     except Exception as e:
         flash("Ошибка. Не удалось добавить точку в БД.")
         print(e)
