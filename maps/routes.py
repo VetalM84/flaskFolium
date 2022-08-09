@@ -4,6 +4,7 @@ import re
 from datetime import datetime
 
 import folium
+import pytz
 from flask import render_template, request, flash, abort
 from folium.features import LatLngPopup
 from folium.plugins import Fullscreen, LocateControl, MarkerCluster
@@ -46,12 +47,17 @@ def index():
     marker_cluster = MarkerCluster().add_to(current_map)
     # folium.LayerControl().add_to(current_map)
 
+    # Add all markers to the map if request method is GET
     for marker in get_all_markers():
+        tz_time = marker.created_at + pytz.timezone("Europe/Kiev").utcoffset(
+            datetime.now()
+        )
+
         add_marker(
             current_map=marker_cluster,
             location=(marker.latitude, marker.longitude),
             color=marker.color,
-            popup=marker.created_at.strftime("%H:%M"),
+            popup=tz_time.strftime("%H:%M"),
         )
 
     if request.method == "POST" and form.validate_on_submit():
@@ -129,7 +135,10 @@ def get_all_markers():
 
 
 def add_report_to_db(
-    latitude, longitude, color: str, comment: str = None
+    latitude,
+    longitude,
+    color: str,
+    comment: str = None,
 ):
     """Add a new report to the DB."""
     try:
