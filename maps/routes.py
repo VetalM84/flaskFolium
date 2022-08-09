@@ -8,9 +8,10 @@ from flask import render_template, request, flash, abort
 from folium.features import LatLngPopup
 from folium.plugins import Fullscreen, LocateControl, MarkerCluster
 
-from maps import app
+from maps import app, db
 from maps.forms import LocationForm
 from maps.ip import ip_white_list
+from maps.models import Report
 
 
 @app.before_request
@@ -31,7 +32,7 @@ def about():
 def index():
     """Index page. Showing map with markers and form to add new marker."""
     form = LocationForm()
-    start_location = (50.45, 30.52)
+    start_location = (50.45, 30.52)  # Ukraine
     current_map = folium.Map(location=start_location, zoom_start=6)
 
     # Map control buttons and plugins
@@ -45,15 +46,13 @@ def index():
     marker_cluster = MarkerCluster().add_to(current_map)
     # folium.LayerControl().add_to(current_map)
 
-    # for testing purposes'
-    # marker_locs = [[random.uniform(44, 52), random.uniform(22, 40)] for x in range(400)]
-    # for pnt in marker_locs:
-    #     folium.Marker(
-    #         location=[pnt[0], pnt[1]],
-    #         popup=f"pnt - {pnt[0]}, {pnt[1]}",
-    #         icon=folium.Icon(color="red", icon="info-sign"),
-    #         tooltip="tooltip",
-    #     ).add_to(marker_cluster)
+    for marker in get_all_markers():
+        add_marker(
+            current_map=marker_cluster,
+            location=(marker.latitude, marker.longitude),
+            color=marker.color,
+            popup=marker.created_at.strftime("%H:%M"),
+        )
 
     if request.method == "POST" and form.validate_on_submit():
         location = form.coordinates.data
@@ -62,22 +61,23 @@ def index():
 
         parsed_coordinates = parse_coordinates(coordinates=location)
 
-        try:
-            add_marker(
-                current_map=marker_cluster,  # add markers on cluster layer
-                location=[
-                    parsed_coordinates[0],
-                    parsed_coordinates[1],
-                ],
-                color=color,
-                popup=datetime.now().strftime("%H:%M"),
-            )
-        except (ValueError, TypeError) as e:
-            flash("Ошибка. Неудалось распознать координаты или они не верны.")
-            print(e)
-        except IndexError as e:
-            flash("Ошибка. Не хватает координат.")
-            print(e)
+        # save to DB
+        add_report_to_db(
+            latitude=parsed_coordinates[0],
+            longitude=parsed_coordinates[1],
+            color=color,
+        )
+
+        # add marker to the map
+        add_marker(
+            current_map=marker_cluster,  # add markers on cluster layer
+            location=[
+                parsed_coordinates[0],
+                parsed_coordinates[1],
+            ],
+            color=color,
+            popup=datetime.now().strftime("%H:%M"),
+        )
 
     return render_template("index.html", form=form, maps=current_map._repr_html_())
 
@@ -103,13 +103,45 @@ def parse_coordinates(coordinates: str):
 
 def add_marker(current_map: object, location, color: str, popup: str):
     """Add a marker to the map."""
-    folium.CircleMarker(
-        location=location,
-        # icon=folium.Icon(color=color, icon="exclamation-sign"),
-        popup=popup,
-        tooltip=popup,
-        radius=9,
-        fill_color=color,
-        color="gray",
-        fill_opacity=0.6,
-    ).add_to(current_map)
+    try:
+        folium.CircleMarker(
+            location=location,
+            # icon=folium.Icon(color=color, icon="exclamation-sign"),
+            popup=popup,
+            tooltip=popup,
+            radius=9,
+            fill_color=color,
+            color="gray",
+            fill_opacity=0.6,
+        ).add_to(current_map)
+    except (ValueError, TypeError) as e:
+        flash("Ошибка. Неудалось распознать координаты или они не верны.")
+        print(e)
+    except IndexError as e:
+        flash("Ошибка. Не хватает координат.")
+        print(e)
+
+
+def get_all_markers():
+    """Retrieve all records from DB with date == today."""
+    # return Report.query.filter(Report.created_at.strftime("%Y-%m-%d") == datetime.now().date()).all()
+    return Report.query.all()
+
+
+def add_report_to_db(
+    latitude, longitude, color: str, comment: str = None
+):
+    """Add a new report to the DB."""
+    try:
+        report = Report(
+            latitude=float(latitude),
+            longitude=float(longitude),
+            color=color,
+            comment=comment,
+            ip=request.remote_addr,
+        )
+        db.session.add(report)
+        db.session.commit()
+    except Exception as e:
+        flash("Ошибка. Не удалось добавить точку в БД.")
+        print(e)
