@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-3">
+        <div class="col-sm-3">
             <h1 class="h3">Добавить место</h1>
             <form method="POST" action="" enctype="multipart/form-data">
                 {{ form.csrf_token() }}
@@ -30,6 +30,6 @@
             </form>
         </div>
 
-        <div class="col-9">{{ maps | safe }}</div>
+        <div class="col-sm-9">{{ maps | safe }}</div>
     </div>
 {% endblock %}
