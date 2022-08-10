@@ -8,6 +8,7 @@ import pytz
 from flask import render_template, request, flash, abort
 from folium.features import LatLngPopup
 from folium.plugins import Fullscreen, LocateControl, MarkerCluster
+from jinja2 import Template
 
 from maps import app, db, cache
 from maps.forms import LocationForm
@@ -44,7 +45,24 @@ def index():
     LocateControl(
         auto_start=False, position="topright", strings={"title": "Где я"}
     ).add_to(current_map)
-    LatLngPopup().add_to(current_map)
+
+    # Rewrite the default popup text to use custom popup with only coordinates
+    popup = LatLngPopup()
+    popup._template = Template(u"""
+            {% macro script(this, kwargs) %}
+                var {{this.get_name()}} = L.popup();
+                function latLngPop(e) {
+                    {{this.get_name()}}
+                        .setLatLng(e.latlng)
+                        .setContent(e.latlng.lat.toFixed(4) + "," +
+                                    "<br>" + e.latlng.lng.toFixed(4))
+                        .openOn({{this._parent.get_name()}});
+                    }
+                {{this._parent.get_name()}}.on('click', latLngPop);
+            {% endmacro %}
+            """)
+    popup.add_to(current_map)
+
     marker_cluster = MarkerCluster().add_to(current_map)
     # folium.LayerControl().add_to(current_map)
 
