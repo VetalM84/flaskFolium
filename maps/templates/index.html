@@ -3,7 +3,8 @@
 {% block content %}
     <div class="row">
         <div class="col-sm-3">
-            <h1 class="h3">Добавить место</h1>
+            <h1 class="h4">Добавить место вручения</h1>
+            <p>Незаконно вручили повестку или стали свидетелем? Добавьте место на карту!</p>
             <form method="POST" action="" enctype="multipart/form-data">
                 {{ form.csrf_token() }}
                 <div class="form-group">
@@ -34,7 +35,7 @@
                             <li>клик на карте сайта -> копируете текст из всплывающего окна,</li>
                             <li>Google карты,</li>
                             <li>навигатор,</li>
-                            <li>и т.п.,</li>
+                            <li>и т.п.</li>
                         </ul>
                 </div>
             </form>
