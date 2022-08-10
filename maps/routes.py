@@ -16,12 +16,12 @@ from maps.ip import ip_white_list
 from maps.models import Report
 
 
-@app.before_request
-def ip_limit_access():
-    """Limit access ip addresses to the app before every URL request."""
-    if not request.remote_addr.startswith(ip_white_list):
-        print("Blocked: ", request.remote_addr)
-        abort(403)
+# @app.before_request
+# def ip_limit_access():
+#     """Limit access ip addresses to the app before every URL request."""
+#     if not request.remote_addr.startswith(ip_white_list):
+#         print("Blocked: ", request.remote_addr)
+#         abort(403)
 
 
 @app.route("/about/")
