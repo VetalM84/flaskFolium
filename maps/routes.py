@@ -9,7 +9,7 @@ from flask import render_template, request, flash, abort
 from folium.features import LatLngPopup
 from folium.plugins import Fullscreen, LocateControl, MarkerCluster
 
-from maps import app, db
+from maps import app, db, cache
 from maps.forms import LocationForm
 from maps.ip import ip_white_list
 from maps.models import Report
@@ -24,6 +24,7 @@ def ip_limit_access():
 
 
 @app.route("/about/")
+@cache.cached(timeout=3600)
 def about():
     """About page."""
     return render_template("about.html")
@@ -128,6 +129,7 @@ def add_marker(current_map: object, location, color: str, popup: str):
         print(e)
 
 
+@cache.cached(timeout=40, key_prefix='all_markers')
 def get_all_markers():
     """Retrieve all records from DB with date == today."""
     today_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
