@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired, Length
 
 class LocationForm(FlaskForm):
     """Form for adding new marker to the map."""
+
     coordinates = StringField(
         "Координаты",
         validators=[DataRequired(), Length(min=7, max=100)],
@@ -18,6 +19,11 @@ class LocationForm(FlaskForm):
     #     render_kw={"rows": "2", "placeholder": "Важная информация, если есть"},
     # )
     color = SelectField(
-        "Событие", choices=[("red", "Вручают"), ("green", "Никого нет")]
+        "Событие",
+        choices=[
+            ("red", "Вручают"),
+            ("yellow", "Возможно вручают"),
+            ("green", "Никого нет"),
+        ],
     )
     submit = SubmitField("Добавить")
