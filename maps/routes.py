@@ -5,14 +5,13 @@ from datetime import datetime
 
 import folium
 import pytz
-from flask import render_template, request, flash, abort
+from flask import render_template, request, flash
 from folium.features import LatLngPopup
 from folium.plugins import Fullscreen, LocateControl, MarkerCluster
 from jinja2 import Template
 
 from maps import app, db, cache
 from maps.forms import LocationForm
-from maps.ip import ip_white_list
 from maps.models import Report
 
 
@@ -55,8 +54,7 @@ def index():
                 function latLngPop(e) {
                     {{this.get_name()}}
                         .setLatLng(e.latlng)
-                        .setContent(e.latlng.lat.toFixed(4) + "," +
-                                    "<br>" + e.latlng.lng.toFixed(4))
+                        .setContent(e.latlng.lat.toFixed(4) + ", " + e.latlng.lng.toFixed(4))
                         .openOn({{this._parent.get_name()}});
                         parent.document.getElementById("coordinates").value = 
                         e.latlng.lat.toFixed(4) + "," + e.latlng.lng.toFixed(4);
