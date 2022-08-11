@@ -65,7 +65,7 @@ def index():
     )
     popup.add_to(current_map)
 
-    marker_cluster = MarkerCluster().add_to(current_map)
+    # marker_cluster = MarkerCluster().add_to(current_map)
     # folium.LayerControl().add_to(current_map)
 
     # Add all markers to the map if request method is GET
@@ -75,7 +75,7 @@ def index():
         )
 
         add_marker(
-            current_map=marker_cluster,
+            current_map=current_map,
             location=(marker.latitude, marker.longitude),
             color=marker.color,
             popup=marker.comment if marker.comment else tz_time.strftime("%H:%M"),
@@ -99,7 +99,7 @@ def index():
 
         # add marker to the map
         add_marker(
-            current_map=marker_cluster,  # add markers on cluster layer
+            current_map=current_map,
             location=[
                 parsed_coordinates[0],
                 parsed_coordinates[1],
@@ -144,7 +144,7 @@ def add_marker(current_map: object, location, color: str, popup: str, tooltip: s
             # icon=folium.Icon(color=color, icon="exclamation-sign"),
             popup=popup,
             tooltip=tooltip,
-            radius=9,
+            radius=7,
             fill_color=color,
             color="gray",
             fill_opacity=0.6,
