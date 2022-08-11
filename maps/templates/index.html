@@ -26,6 +26,15 @@
                     {% endif %}
                 </div>
                 <div class="form-group">
+                    {{ form.comment.label(class="form-control-label") }}
+                    {{ form.comment(class="form-control") }}
+                    {% if form.comment.errors %}
+                        {% for error in form.comment.errors %}
+                            <p><span class="text-danger">{{ error }}</span></p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="form-group">
                     <p>{{ form.submit(class="btn btn-primary") }}</p>
                 </div>
                 <div class="form-group">

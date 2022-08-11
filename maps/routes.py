@@ -78,13 +78,14 @@ def index():
             current_map=marker_cluster,
             location=(marker.latitude, marker.longitude),
             color=marker.color,
-            popup=tz_time.strftime("%H:%M"),
+            popup=marker.comment if marker.comment else tz_time.strftime("%H:%M"),
+            tooltip=tz_time.strftime("%H:%M"),
         )
 
     if request.method == "POST" and form.validate_on_submit():
         location = form.coordinates.data
         color = form.color.data
-        # comment = form.comment.data
+        comment = form.comment.data
 
         parsed_coordinates = parse_coordinates(coordinates=location)
 
@@ -93,6 +94,7 @@ def index():
             latitude=parsed_coordinates[0],
             longitude=parsed_coordinates[1],
             color=color,
+            comment=comment,
         )
 
         # add marker to the map
@@ -103,7 +105,8 @@ def index():
                 parsed_coordinates[1],
             ],
             color=color,
-            popup=datetime.now().strftime("%H:%M"),
+            popup=comment if comment else datetime.now().strftime("%H:%M"),
+            tooltip=datetime.now().strftime("%H:%M"),
         )
 
     return render_template(
@@ -133,14 +136,14 @@ def parse_coordinates(coordinates: str):
     return coordinates_cleaned.split(",")
 
 
-def add_marker(current_map: object, location, color: str, popup: str):
+def add_marker(current_map: object, location, color: str, popup: str, tooltip: str):
     """Add a marker to the map."""
     try:
         folium.CircleMarker(
             location=location,
             # icon=folium.Icon(color=color, icon="exclamation-sign"),
             popup=popup,
-            tooltip=popup,
+            tooltip=tooltip,
             radius=9,
             fill_color=color,
             color="gray",
@@ -154,7 +157,7 @@ def add_marker(current_map: object, location, color: str, popup: str):
         print(e)
 
 
-@cache.cached(timeout=40, key_prefix="all_markers")
+@cache.cached(timeout=30, key_prefix="all_markers")
 def get_all_markers():
     """Retrieve all records from DB with date == today."""
     today_datetime = datetime(
@@ -167,7 +170,7 @@ def add_report_to_db(
     latitude,
     longitude,
     color: str,
-    comment: str = None,
+    comment: str,
 ):
     """Add a new report to the DB."""
     try:

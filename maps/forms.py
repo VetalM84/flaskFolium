@@ -16,7 +16,7 @@ class LocationForm(FlaskForm):
     comment = TextAreaField(
         "Комментарий",
         validators=[Length(min=0, max=100)],
-        render_kw={"rows": "2", "placeholder": "Важная информация, если есть"},
+        render_kw={"rows": "2", "placeholder": "Комментарий по желанию"},
     )
     color = SelectField(
         "Событие",
