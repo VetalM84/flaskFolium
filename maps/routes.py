@@ -7,20 +7,13 @@ import folium
 import pytz
 from flask import render_template, request, flash
 from folium.features import LatLngPopup
-from folium.plugins import Fullscreen, LocateControl, MarkerCluster
+from folium.plugins import Fullscreen, LocateControl
 from jinja2 import Template
+from sqlalchemy import func
 
 from maps import app, db, cache
 from maps.forms import LocationForm
 from maps.models import Report
-
-
-# @app.before_request
-# def ip_limit_access():
-#     """Limit access ip addresses to the app before every URL request."""
-#     if not request.remote_addr.startswith(ip_white_list):
-#         print("Blocked: ", request.remote_addr)
-#         abort(403)
 
 
 @app.route("/about/")
@@ -48,7 +41,7 @@ def index():
     # Rewrite the default popup text to use custom popup with only coordinates
     popup = LatLngPopup()
     popup._template = Template(
-        u"""
+        """
             {% macro script(this, kwargs) %}
                 var {{this.get_name()}} = L.popup();
                 function latLngPop(e) {
@@ -68,8 +61,12 @@ def index():
     # marker_cluster = MarkerCluster().add_to(current_map)
     # folium.LayerControl().add_to(current_map)
 
+    filter_date = request.args.get(
+        "date", default=datetime.today().date(), type=to_date
+    )
+
     # Add all markers to the map if request method is GET
-    for marker in get_all_markers():
+    for marker in get_all_markers(date=filter_date):
         tz_time = marker.created_at + pytz.timezone("Europe/Kiev").utcoffset(
             datetime.now()
         )
@@ -113,6 +110,7 @@ def index():
         "index.html",
         form=form,
         date=datetime.today().strftime("%d.%m"),
+        yesterday=filter_date.strftime("%d.%m.%Y"),
         maps=current_map._repr_html_(),
     )
 
@@ -157,21 +155,13 @@ def add_marker(current_map: object, location, color: str, popup: str, tooltip: s
         print(e)
 
 
-@cache.cached(timeout=30, key_prefix="all_markers")
-def get_all_markers():
-    """Retrieve all records from DB with date == today."""
-    today_datetime = datetime(
-        datetime.today().year, datetime.today().month, datetime.today().day
-    )
-    return Report.query.filter(Report.created_at >= today_datetime).all()
+# @cache.cached(timeout=30, key_prefix="all_markers")
+def get_all_markers(date):
+    """Retrieve all records from DB filtering by date added."""
+    return Report.query.filter(func.date(Report.created_at) == date).all()
 
 
-def add_report_to_db(
-    latitude,
-    longitude,
-    color: str,
-    comment: str,
-):
+def add_report_to_db(latitude, longitude, color: str, comment: str):
     """Add a new report to the DB."""
     try:
         report = Report(
@@ -189,3 +179,8 @@ def add_report_to_db(
     except Exception as e:
         flash("Ошибка. Не удалось добавить точку в БД.")
         print(e)
+
+
+def to_date(date_string):
+    """Convert string from url argument named 'date' to date object."""
+    return datetime.strptime(date_string, "%Y-%m-%d").date()
