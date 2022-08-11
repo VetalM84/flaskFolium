@@ -48,7 +48,8 @@ def index():
 
     # Rewrite the default popup text to use custom popup with only coordinates
     popup = LatLngPopup()
-    popup._template = Template(u"""
+    popup._template = Template(
+        u"""
             {% macro script(this, kwargs) %}
                 var {{this.get_name()}} = L.popup();
                 function latLngPop(e) {
@@ -57,10 +58,13 @@ def index():
                         .setContent(e.latlng.lat.toFixed(4) + "," +
                                     "<br>" + e.latlng.lng.toFixed(4))
                         .openOn({{this._parent.get_name()}});
+                        parent.document.getElementById("coordinates").value = 
+                        e.latlng.lat.toFixed(4) + "," + e.latlng.lng.toFixed(4);
                     }
                 {{this._parent.get_name()}}.on('click', latLngPop);
             {% endmacro %}
-            """)
+            """
+    )
     popup.add_to(current_map)
 
     marker_cluster = MarkerCluster().add_to(current_map)
@@ -104,7 +108,12 @@ def index():
             popup=datetime.now().strftime("%H:%M"),
         )
 
-    return render_template("index.html", form=form, maps=current_map._repr_html_())
+    return render_template(
+        "index.html",
+        form=form,
+        date=datetime.today().strftime("%d.%m"),
+        maps=current_map._repr_html_(),
+    )
 
 
 def parse_coordinates(coordinates: str):
@@ -147,10 +156,12 @@ def add_marker(current_map: object, location, color: str, popup: str):
         print(e)
 
 
-@cache.cached(timeout=40, key_prefix='all_markers')
+@cache.cached(timeout=40, key_prefix="all_markers")
 def get_all_markers():
     """Retrieve all records from DB with date == today."""
-    today_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
+    today_datetime = datetime(
+        datetime.today().year, datetime.today().month, datetime.today().day
+    )
     return Report.query.filter(Report.created_at >= today_datetime).all()
 
 
