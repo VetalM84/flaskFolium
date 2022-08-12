@@ -1,7 +1,7 @@
 """Store all routes."""
 
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import folium
 import pytz
@@ -61,12 +61,12 @@ def index():
     # marker_cluster = MarkerCluster().add_to(current_map)
     # folium.LayerControl().add_to(current_map)
 
-    filter_date = request.args.get(
+    date_filter_argument = request.args.get(
         "date", default=datetime.today().date(), type=to_date
     )
 
     # Add all markers to the map if request method is GET
-    for marker in get_all_markers(date=filter_date):
+    for marker in get_all_markers(date=date_filter_argument):
         tz_time = marker.created_at + pytz.timezone("Europe/Kiev").utcoffset(
             datetime.now()
         )
@@ -105,12 +105,22 @@ def index():
             popup=comment if comment else datetime.now().strftime("%H:%M"),
             tooltip=datetime.now().strftime("%H:%M"),
         )
-
+    kwargs = {
+        "current_date": date_filter_argument,
+        "current_date_ua_format": date_filter_argument.strftime("%d.%m.%Y"),
+        "yesterday": date_filter_argument - timedelta(days=1),
+        "yesterday_ua_format": (date_filter_argument - timedelta(days=1)).strftime(
+            "%d.%m.%Y"
+        ),
+        "tomorrow": date_filter_argument + timedelta(days=1),
+        "tomorrow_ua_format": (date_filter_argument + timedelta(days=1)).strftime(
+            "%d.%m.%Y"
+        ),
+    }
     return render_template(
         "index.html",
+        **kwargs,
         form=form,
-        date=datetime.today().strftime("%d.%m"),
-        yesterday=filter_date.strftime("%d.%m.%Y"),
         maps=current_map._repr_html_(),
     )
 
