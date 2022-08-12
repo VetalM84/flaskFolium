@@ -6,5 +6,6 @@ gunicorn==20.1.0
 flask_sqlalchemy==2.5.1
 SQLAlchemy==1.4.40
 psycopg2==2.9.3
-pytz==2022.1
+pytz==2022.2
 Flask-Caching==2.0.1
+Jinja2==3.1.2

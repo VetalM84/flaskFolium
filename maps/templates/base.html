@@ -16,9 +16,12 @@
   <body>
   <div class="container border-bottom" style="margin-bottom: 20px">
       <header class="d-flex justify-content-center py-3">
-        <ul class="nav nav-pills">
+        <ul class="nav nav-pills justify-content-center">
           {% block navi %}
-              <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link active" aria-current="page">Карта вручения повесток</a></li>
+              <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link">Карта сегодня</a></li>
+              <li class="nav-item"><a href="{{ url_for('index', date=yesterday) }}" class="nav-link" aria-current="page">< {{ yesterday_ua_format }}</a></li>
+              <li class="nav-item"><a href="{{ url_for('index', date=current_date) }}" class="nav-link active" aria-current="page">Карта на {{ current_date_ua_format }}</a></li>
+              <li class="nav-item"><a href="{{ url_for('index', date=tomorrow) }}" class="nav-link" aria-current="page">{{ tomorrow_ua_format }} ></a></li>
               <li class="nav-item"><a href="{{ url_for('about') }}" class="nav-link">О проекте</a></li>
           {% endblock %}
         </ul>
@@ -45,8 +48,6 @@
           {% endblock %}
       </div>
     </div>
-
-  </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
   </body>
 </html>
