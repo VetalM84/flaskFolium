@@ -106,14 +106,15 @@ def index():
             tooltip=datetime.now().strftime("%H:%M"),
         )
     kwargs = {
+        "today": datetime.today().date(),
         "current_date": date_filter_argument,
         "current_date_ua_format": date_filter_argument.strftime("%d.%m.%Y"),
         "yesterday": date_filter_argument - timedelta(days=1),
         "yesterday_ua_format": (date_filter_argument - timedelta(days=1)).strftime(
             "%d.%m.%Y"
         ),
-        "tomorrow": date_filter_argument + timedelta(days=1),
-        "tomorrow_ua_format": (date_filter_argument + timedelta(days=1)).strftime(
+        "next_day": date_filter_argument + timedelta(days=1),
+        "next_day_ua_format": (date_filter_argument + timedelta(days=1)).strftime(
             "%d.%m.%Y"
         ),
     }
