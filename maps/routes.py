@@ -58,8 +58,12 @@ def index():
     )
     popup.add_to(current_map)
 
+    deliver_layer = folium.FeatureGroup(name="Вручают").add_to(current_map)
+    possibly_deliver_layer = folium.FeatureGroup(name="Возможно вручают").add_to(current_map)
+    do_not_deliver_layer = folium.FeatureGroup(name="Никого нет").add_to(current_map)
+    folium.LayerControl().add_to(current_map)
+
     # marker_cluster = MarkerCluster().add_to(current_map)
-    # folium.LayerControl().add_to(current_map)
 
     date_filter_argument = request.args.get(
         "date", default=datetime.today().date(), type=to_date
@@ -71,8 +75,18 @@ def index():
             datetime.now()
         )
 
+        match marker.color:
+            case "red":
+                layer = deliver_layer
+            case "yellow":
+                layer = possibly_deliver_layer
+            case "green":
+                layer = do_not_deliver_layer
+            case _:
+                layer = current_map
+
         add_marker(
-            current_map=current_map,
+            current_map=layer,
             location=(marker.latitude, marker.longitude),
             color=marker.color,
             popup=marker.comment if marker.comment else tz_time.strftime("%H:%M"),
@@ -105,6 +119,7 @@ def index():
             popup=comment if comment else datetime.now().strftime("%H:%M"),
             tooltip=datetime.now().strftime("%H:%M"),
         )
+
     kwargs = {
         "today": datetime.today().date(),
         "current_date": date_filter_argument,
