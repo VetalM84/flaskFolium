@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 import folium
 import pytz
-from flask import render_template, request, flash
+from flask import flash, render_template, request
 from folium.features import LatLngPopup
 from folium.plugins import Fullscreen, LocateControl
 from jinja2 import Template
@@ -156,7 +156,7 @@ def parse_coordinates(coordinates: str):
         if re.fullmatch(r"\d{2}\.\d{2,}", item) is None:
             # flash("Ошибка. Неудалось распознать координаты или они не верны.")
             return False
-    print(coordinates_cleaned)
+    app.logger.debug(coordinates_cleaned)
     return coordinates_cleaned.split(",")
 
 
@@ -175,10 +175,10 @@ def add_marker(current_map: object, location, color: str, popup: str, tooltip: s
         ).add_to(current_map)
     except (ValueError, TypeError) as e:
         flash("Ошибка. Неудалось распознать координаты или они не верны.")
-        print(e)
+        app.logger.error(e, "Unable to parse coordinates or they are wrong.")
     except IndexError as e:
         flash("Ошибка. Не хватает координат.")
-        print(e)
+        app.logger.error(e, "Luck of coordinates.")
 
 
 # @cache.cached(timeout=30, key_prefix="all_markers")
@@ -201,10 +201,10 @@ def add_report_to_db(latitude, longitude, color: str, comment: str):
         db.session.commit()
     except IndexError as e:
         flash("Ошибка. Не хватает координат.")
-        print(e)
+        app.logger.error(e, "Luck of coordinates.")
     except Exception as e:
         flash("Ошибка. Не удалось добавить точку в БД.")
-        print(e)
+        app.logger.error(e, "Unable to save marker to DB.")
 
 
 def to_date(date_string):
