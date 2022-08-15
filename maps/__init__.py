@@ -1,11 +1,13 @@
 """Initialization of the app."""
 
+import logging
 import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_caching import Cache
 
+logging.basicConfig(level=logging.WARNING, format='%(asctime)s %(levelname)s %(name)s : %(message)s')
 app = Flask(__name__)
 cache = Cache(app, config={"CACHE_TYPE": "SimpleCache"})
 
