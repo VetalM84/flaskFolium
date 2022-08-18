@@ -199,7 +199,11 @@ def add_marker(current_map: object, location, color: str, popup: str, tooltip: s
 # @cache.cached(timeout=30, key_prefix="all_markers")
 def get_all_markers(date):
     """Retrieve all records from DB filtering by date added."""
-    return Report.query.filter(func.date(Report.created_at) == date).all()
+    try:
+        return Report.query.filter(func.date(Report.created_at) == date).all()
+    except Exception as e:
+        flash(str(e))
+        app.logger.error(e)
 
 
 def add_report_to_db(latitude, longitude, color: str, comment: str):
