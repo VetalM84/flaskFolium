@@ -23,6 +23,13 @@ def page_not_found(error):
     return render_template('error.html', message=message), 404
 
 
+@app.errorhandler(500)
+def server_error(error):
+    """Return a custom 500 error."""
+    message = "Сервер не может обработать запрос."
+    return render_template('error.html', message=message), 500
+
+
 @app.route("/about/")
 @cache.cached(timeout=3600)
 def about():
