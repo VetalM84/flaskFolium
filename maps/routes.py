@@ -184,7 +184,6 @@ def add_marker(current_map: object, location, color: str, popup: str, tooltip: s
     try:
         folium.CircleMarker(
             location=location,
-            # icon=folium.Icon(color=color, icon="exclamation-sign"),
             popup=popup,
             tooltip=tooltip,
             radius=7,
@@ -192,12 +191,9 @@ def add_marker(current_map: object, location, color: str, popup: str, tooltip: s
             color="gray",
             fill_opacity=0.6,
         ).add_to(current_map)
-    except (ValueError, TypeError) as e:
-        flash("Ошибка. Неудалось распознать координаты или они не верны.")
-        app.logger.error(e, "Unable to parse coordinates or they are wrong.")
-    except IndexError as e:
-        flash("Ошибка. Не хватает координат.")
-        app.logger.error(e, "Luck of coordinates.")
+    except Exception as e:
+        flash(str(e))
+        app.logger.error(e)
 
 
 # @cache.cached(timeout=30, key_prefix="all_markers")
@@ -218,11 +214,8 @@ def add_report_to_db(latitude, longitude, color: str, comment: str):
         )
         db.session.add(report)
         db.session.commit()
-    except IndexError as e:
-        flash("Ошибка. Не хватает координат.")
-        app.logger.error(e, "Luck of coordinates.")
     except Exception as e:
-        flash("Ошибка. Не удалось добавить точку в БД.")
+        flash("Ошибка. Не удалось добавить точку в БД.", str(e))
         app.logger.error(e, "Unable to save marker to DB.")
 
 
