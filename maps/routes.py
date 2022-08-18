@@ -166,10 +166,15 @@ def parse_coordinates(coordinates: str):
         .replace("  ", ",")
         .replace(" ", ",")
     )
-    for item in coordinates_cleaned.split(","):
-        if re.fullmatch(r"\d{2}\.\d{2,}", item) is None:
-            # flash("Ошибка. Неудалось распознать координаты или они не верны.")
-            return False
+    if len(coordinates_cleaned.split(",")) < 2:
+        app.logger.error("Luck of coordinates.")
+        flash("Ошибка. Не хватает координат.")
+        raise IndexError("Luck of coordinates.")
+    else:
+        for item in coordinates_cleaned.split(","):
+            if re.fullmatch(r"\d{2}\.\d{2,}", item) is None:
+                flash("Ошибка. Неудалось распознать координаты или они не верны.")
+                raise ValueError("Can't parse coordinates.")
     app.logger.debug(coordinates_cleaned)
     return coordinates_cleaned.split(",")
 
