@@ -16,6 +16,13 @@ from maps.forms import LocationForm
 from maps.models import Report
 
 
+@app.errorhandler(404)
+def page_not_found(error):
+    """Return a custom 404 error."""
+    message = "Такая страница не найдена."
+    return render_template('error.html', message=message), 404
+
+
 @app.route("/about/")
 @cache.cached(timeout=3600)
 def about():
