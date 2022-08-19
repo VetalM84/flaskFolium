@@ -218,6 +218,9 @@ def add_report_to_db(latitude, longitude, color: str, comment: str):
         )
         db.session.add(report)
         db.session.commit()
+        flash("Точка добавлена!")
+        app.logger.info("Marker saved to DB.")
+
     except Exception as e:
         flash("Ошибка. Не удалось добавить точку в БД.", str(e))
         app.logger.error(e, "Unable to save marker to DB.")
