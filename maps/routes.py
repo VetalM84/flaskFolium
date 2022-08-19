@@ -168,12 +168,12 @@ def parse_coordinates(coordinates: str):
     )
     if len(coordinates_cleaned.split(",")) < 2:
         app.logger.error("Luck of coordinates.")
-        flash("Ошибка. Не хватает координат.")
+        flash("Ошибка. Не хватает координат.", category="error")
         raise IndexError("Luck of coordinates.")
     else:
         for item in coordinates_cleaned.split(","):
             if re.fullmatch(r"\d{2}\.\d{2,}", item) is None:
-                flash("Ошибка. Неудалось распознать координаты или они не верны.")
+                flash("Ошибка. Неудалось распознать координаты или они не верны.", category="error")
                 raise ValueError("Can't parse coordinates.")
     app.logger.debug(coordinates_cleaned)
     return coordinates_cleaned.split(",")
@@ -192,7 +192,7 @@ def add_marker(current_map: object, location, color: str, popup: str, tooltip: s
             fill_opacity=0.6,
         ).add_to(current_map)
     except Exception as e:
-        flash(str(e))
+        flash(str(e), category="error")
         app.logger.error(e)
 
 
@@ -202,7 +202,7 @@ def get_all_markers(date):
     try:
         return Report.query.filter(func.date(Report.created_at) == date).all()
     except Exception as e:
-        flash(str(e))
+        flash(str(e), category="error")
         app.logger.error(e)
 
 
@@ -218,11 +218,11 @@ def add_report_to_db(latitude, longitude, color: str, comment: str):
         )
         db.session.add(report)
         db.session.commit()
-        flash("Точка добавлена!")
+        flash("Точка добавлена!", category="success")
         app.logger.info("Marker saved to DB.")
 
     except Exception as e:
-        flash("Ошибка. Не удалось добавить точку в БД.", str(e))
+        flash("Ошибка. Не удалось добавить точку в БД." + str(e), category="error")
         app.logger.error(e, "Unable to save marker to DB.")
 
 
