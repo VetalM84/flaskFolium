@@ -7,7 +7,9 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_caching import Cache
 
-logging.basicConfig(level=logging.WARNING, format='%(asctime)s %(levelname)s %(name)s : %(message)s')
+logging.basicConfig(
+    level=logging.WARNING, format="%(asctime)s %(levelname)s %(name)s : %(message)s"
+)
 app = Flask(__name__)
 cache = Cache(app, config={"CACHE_TYPE": "SimpleCache"})
 
@@ -24,5 +26,6 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 from maps import routes
+from maps.api.v1 import api
 
 db.create_all()
