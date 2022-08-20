@@ -9,3 +9,4 @@ psycopg2==2.9.3
 pytz~=2022.2
 Flask-Caching==2.0.1
 Jinja2==3.1.2
+flask_restful==0.3.9
