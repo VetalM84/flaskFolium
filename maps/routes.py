@@ -20,14 +20,14 @@ from maps.models import Report
 def page_not_found(error):
     """Return a custom 404 error."""
     message = "Такая страница не найдена."
-    return render_template('error.html', message=message), 404
+    return render_template("error.html", message=message), 404
 
 
 @app.errorhandler(500)
 def server_error(error):
     """Return a custom 500 error."""
     message = "Сервер не может обработать запрос."
-    return render_template('error.html', message=message), 500
+    return render_template("error.html", message=message), 500
 
 
 @app.route("/about/")
@@ -73,7 +73,9 @@ def index():
     popup.add_to(current_map)
 
     deliver_layer = folium.FeatureGroup(name="Вручают").add_to(current_map)
-    possibly_deliver_layer = folium.FeatureGroup(name="Возможно вручают").add_to(current_map)
+    possibly_deliver_layer = folium.FeatureGroup(name="Возможно вручают").add_to(
+        current_map
+    )
     do_not_deliver_layer = folium.FeatureGroup(name="Никого нет").add_to(current_map)
     folium.LayerControl().add_to(current_map)
 
@@ -173,7 +175,10 @@ def parse_coordinates(coordinates: str):
     else:
         for item in coordinates_cleaned.split(","):
             if re.fullmatch(r"\d{2}\.\d{2,}", item) is None:
-                flash("Ошибка. Неудалось распознать координаты или они не верны.", category="error")
+                flash(
+                    "Ошибка. Неудалось распознать координаты или они не верны.",
+                    category="error",
+                )
                 raise ValueError("Can't parse coordinates.")
     app.logger.debug(coordinates_cleaned)
     return coordinates_cleaned.split(",")
