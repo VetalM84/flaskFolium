@@ -4,7 +4,7 @@ import logging
 import os
 
 from flask import Flask
-from flask_restful import Api
+from flask_restx import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_caching import Cache
 
@@ -12,7 +12,6 @@ logging.basicConfig(
     level=logging.WARNING, format="%(asctime)s %(levelname)s %(name)s : %(message)s"
 )
 app = Flask(__name__)
-apis = Api(app)
 cache = Cache(app, config={"CACHE_TYPE": "SimpleCache"})
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -28,6 +27,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 from maps import routes
+
+apis = Api(app, doc="/api/v1/doc/", title="Maps API", description="Maps API")
 from maps.api.v1 import endpoints
 
 db.create_all()

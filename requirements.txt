@@ -1,4 +1,5 @@
-Flask==2.2.2
+Flask==2.1.2
+werkzeug==2.1.2
 Flask-WTF==1.0.1
 folium==0.12.1.post1
 WTForms==3.0.1
@@ -9,4 +10,4 @@ psycopg2==2.9.3
 pytz~=2022.2
 Flask-Caching==2.0.1
 Jinja2==3.1.2
-flask_restful==0.3.9
+flask_restx==0.5.1

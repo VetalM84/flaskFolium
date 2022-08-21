@@ -3,25 +3,29 @@
 from datetime import datetime
 
 from flask import request
-from flask_restful import Resource, fields, marshal_with
+from flask_restx import Resource, fields, marshal_with
 
 from maps import apis
 from maps.routes import get_all_markers, to_date
 
-
-class Report(Resource):
-    """Report resource from Report DB model."""
-
-    serialize_fields = {
+report_model = apis.model(
+    "Report",
+    {
         "id": fields.Integer,
         "latitude": fields.Float,
         "longitude": fields.Float,
         "color": fields.String,
         "comment": fields.String,
         "created_at": fields.DateTime(dt_format="rfc822"),
-    }
+    },
+)
 
-    @marshal_with(serialize_fields)
+
+@apis.route("/api/v1/markers/")
+class Report(Resource):
+    """Report resource from Report DB model."""
+
+    @marshal_with(report_model)
     def get(self):
         """
         Retrieve all markers with date provided. If not date provided, return all markers by today.
@@ -31,6 +35,3 @@ class Report(Resource):
             "date", default=datetime.today().date(), type=to_date
         )
         return get_all_markers(request_date=date_filter_argument)
-
-
-apis.add_resource(Report, "/api/v1/markers/")
