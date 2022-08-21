@@ -28,7 +28,15 @@ db = SQLAlchemy(app)
 
 from maps import routes
 
-apis = Api(app, doc="/api/v1/doc/", title="Maps API", description="Maps API")
+apis = Api(
+    app=app,
+    doc="/api/v1/doc/",
+    version="1.0",
+    title="Maps API",
+    description="Maps API",
+    default="Markers",
+    default_label="Markers",
+)
 from maps.api.v1 import endpoints
 
 db.create_all()
