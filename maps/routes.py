@@ -1,7 +1,7 @@
 """Store all routes."""
 
 import re
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 import folium
 import pytz
@@ -84,7 +84,7 @@ def index():
     )
 
     # Add all markers to the map if request method is GET
-    for marker in get_all_markers(date=date_filter_argument):
+    for marker in get_all_markers(request_date=date_filter_argument):
         tz_time = marker.created_at + pytz.timezone("Europe/Kiev").utcoffset(
             datetime.now()
         )
@@ -197,10 +197,10 @@ def add_marker(current_map: object, location, color: str, popup: str, tooltip: s
 
 
 # @cache.cached(timeout=30, key_prefix="all_markers")
-def get_all_markers(date):
+def get_all_markers(request_date):
     """Retrieve all records from DB filtering by date added."""
     try:
-        return Report.query.filter(func.date(Report.created_at) == date).all()
+        return Report.query.filter(func.date(Report.created_at) == request_date).all()
     except Exception as e:
         flash(str(e), category="error")
         app.logger.error(e)
@@ -226,6 +226,10 @@ def add_report_to_db(latitude, longitude, color: str, comment: str):
         app.logger.error(e, "Unable to save marker to DB.")
 
 
-def to_date(date_string):
+def to_date(date_string: str):
     """Convert string from url argument named 'date' to date object."""
-    return datetime.strptime(date_string, "%Y-%m-%d").date()
+    date_object = datetime.strptime(date_string, "%Y-%m-%d").date()
+    if isinstance(date_object, date):
+        return date_object
+    else:
+        raise ValueError("Can't parse date.")
