@@ -11,7 +11,8 @@ from folium.plugins import Fullscreen, LocateControl
 from jinja2 import Template
 from sqlalchemy import func
 
-from maps import app, db, cache
+from extensions import db
+from maps import app, cache
 from maps.forms import LocationForm
 from maps.models import Report
 

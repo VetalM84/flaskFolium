@@ -1,6 +1,6 @@
 """Models for the maps' app."""
 
-from maps import db
+from extensions import db
 from dataclasses import dataclass
 
 
