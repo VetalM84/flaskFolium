@@ -3,10 +3,10 @@
 from flask import request
 from flask_restx import Resource, fields, marshal_with
 
-from maps import apis
+from maps.apis import api
 from maps.routes import get_all_markers, to_date, add_report_to_db
 
-get_model = apis.model(
+get_model = api.model(
     "Report",
     {
         "id": fields.Integer,
@@ -18,7 +18,7 @@ get_model = apis.model(
     },
 )
 
-post_model = apis.model(
+post_model = api.model(
     "Report",
     {
         "latitude": fields.Float,
@@ -29,7 +29,7 @@ post_model = apis.model(
 )
 
 
-@apis.route("/api/v1/markers/<string:date>/", methods=["GET"])
+@api.route("/markers/<string:date>/", methods=["GET"])
 class Report(Resource):
     """Report resource from Report DB model."""
 
@@ -42,12 +42,12 @@ class Report(Resource):
         return get_all_markers(request_date=to_date(date))
 
 
-@apis.route("/api/v1/markers/", methods=["POST", "PUT"])
+@api.route("/markers/", methods=["POST", "PUT"])
 class AddReport(Resource):
     """Add Report resource to DB model."""
 
-    @apis.doc(responses={201: "Created", 400: "Validation error"})
-    @apis.expect(post_model)
+    @api.doc(responses={201: "Created", 400: "Validation error"})
+    @api.expect(post_model)
     @marshal_with(post_model)
     def put(self):
         """POST or PUT method for adding marker to DB."""
