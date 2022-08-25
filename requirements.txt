@@ -11,3 +11,4 @@ pytz~=2022.2
 Flask-Caching==2.0.1
 Jinja2==3.1.2
 flask_restx==0.5.1
+pytest~=7.1.2
