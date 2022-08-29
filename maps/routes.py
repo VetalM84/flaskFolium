@@ -5,40 +5,41 @@ from datetime import date, datetime, timedelta
 
 import folium
 import pytz
-from flask import flash, render_template, request
+from flask import flash, render_template, request, Blueprint
 from folium.features import LatLngPopup
 from folium.plugins import Fullscreen, LocateControl
 from jinja2 import Template
 from sqlalchemy import func
 
-from extensions import db
-from maps import app, cache
+from maps import cache, db
 from maps.forms import LocationForm
 from maps.models import Report
 
+main = Blueprint("main", __name__)
 
-@app.errorhandler(404)
+
+@main.errorhandler(404)
 def page_not_found(error):
     """Return a custom 404 error."""
     message = "Такая страница не найдена."
     return render_template("error.html", message=message), 404
 
 
-@app.errorhandler(500)
+@main.errorhandler(500)
 def server_error(error):
     """Return a custom 500 error."""
     message = "Сервер не может обработать запрос."
     return render_template("error.html", message=message), 500
 
 
-@app.route("/about/")
+@main.route("/about/")
 @cache.cached(timeout=3600)
 def about():
     """About page."""
     return render_template("about.html")
 
 
-@app.route("/", methods=("GET", "POST"))
+@main.route("/", methods=("GET", "POST"))
 def index():
     """Index page. Showing map with markers and form to add new marker."""
     form = LocationForm()
@@ -170,7 +171,7 @@ def parse_coordinates(coordinates: str):
         .replace(" ", ",")
     )
     if len(coordinates_cleaned.split(",")) < 2:
-        app.logger.error("Luck of coordinates.")
+        # app.logger.error("Luck of coordinates.")
         flash("Ошибка. Не хватает координат.", category="error")
         raise IndexError("Luck of coordinates.")
     else:
@@ -181,7 +182,7 @@ def parse_coordinates(coordinates: str):
                     category="error",
                 )
                 raise ValueError("Can't parse coordinates.")
-    app.logger.debug(coordinates_cleaned)
+    # app.logger.debug(coordinates_cleaned)
     return coordinates_cleaned.split(",")
 
 
@@ -199,7 +200,7 @@ def add_marker(current_map: object, location, color: str, popup: str, tooltip: s
         ).add_to(current_map)
     except Exception as e:
         flash(str(e), category="error")
-        app.logger.error(e)
+        # app.logger.error(e)
 
 
 # @cache.cached(timeout=30, key_prefix="all_markers")
@@ -209,7 +210,7 @@ def get_all_markers(request_date):
         return Report.query.filter(func.date(Report.created_at) == request_date).all()
     except Exception as e:
         flash(str(e), category="error")
-        app.logger.error(e)
+        # app.logger.error(e)
 
 
 def add_report_to_db(latitude, longitude, color: str, comment: str):
@@ -225,11 +226,11 @@ def add_report_to_db(latitude, longitude, color: str, comment: str):
         db.session.add(report)
         db.session.commit()
         flash("Точка добавлена!", category="success")
-        app.logger.info("Marker saved to DB.")
+        # app.logger.info("Marker saved to DB.")
 
     except Exception as e:
         flash("Ошибка. Не удалось добавить точку в БД." + str(e), category="error")
-        app.logger.error(e, "Unable to save marker to DB.")
+        # app.logger.error(e, "Unable to save marker to DB.")
 
 
 def to_date(date_string: str):
