@@ -3,9 +3,9 @@
 from flask import Blueprint
 from flask_restx import Api
 
-blueprint = Blueprint('api', __name__)
+api_blueprint = Blueprint("api_blueprint", __name__)
 api = Api(
-    app=blueprint,
+    app=api_blueprint,
     doc="/doc/",
     version="1.0",
     title="Maps API",
