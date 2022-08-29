@@ -18,13 +18,13 @@
       <header class="d-flex justify-content-center py-3">
         <ul class="nav nav-pills justify-content-center">
           {% block navi %}
-              <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link">Карта сегодня</a></li>
-              <li class="nav-item"><a href="{{ url_for('index', date=yesterday) }}" class="nav-link" aria-current="page">< {{ yesterday_ua_format }}</a></li>
-              <li class="nav-item"><a href="{{ url_for('index', date=current_date) }}" class="nav-link active" aria-current="page">Карта на {{ current_date_ua_format }}</a></li>
+              <li class="nav-item"><a href="{{ url_for('main.index') }}" class="nav-link">Карта сегодня</a></li>
+              <li class="nav-item"><a href="{{ url_for('main.index', date=yesterday) }}" class="nav-link" aria-current="page">< {{ yesterday_ua_format }}</a></li>
+              <li class="nav-item"><a href="{{ url_for('main.index', date=current_date) }}" class="nav-link active" aria-current="page">Карта на {{ current_date_ua_format }}</a></li>
             {% if current_date < today %}
-              <li class="nav-item"><a href="{{ url_for('index', date=next_day) }}" class="nav-link" aria-current="page">{{ next_day_ua_format }} ></a></li>
+              <li class="nav-item"><a href="{{ url_for('main.index', date=next_day) }}" class="nav-link" aria-current="page">{{ next_day_ua_format }} ></a></li>
             {% endif %}
-              <li class="nav-item"><a href="{{ url_for('about') }}" class="nav-link">О проекте</a></li>
+              <li class="nav-item"><a href="{{ url_for('main.about') }}" class="nav-link">О проекте</a></li>
           {% endblock %}
         </ul>
       </header>
