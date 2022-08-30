@@ -6,8 +6,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY") or "hard to guess string"
-    FLASKY_ADMIN = os.environ.get("FLASKY_ADMIN")
+    SECRET_KEY = os.environ.get("SECRET_KEY") or "hard-to-guess-string"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     @staticmethod
@@ -17,11 +16,7 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
-    if SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
-        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace(
-            "postgres://", "postgresql://", 1
-        )
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DEV_DATABASE_URL")
 
 
 class TestingConfig(Config):
@@ -30,7 +25,7 @@ class TestingConfig(Config):
 
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "postgresql://")
     if SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
         SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace(
             "postgres://", "postgresql://", 1
