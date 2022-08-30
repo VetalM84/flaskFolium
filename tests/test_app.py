@@ -7,7 +7,13 @@ from flask import current_app
 
 from maps import create_app, db
 
-from maps.routes import to_date
+from maps.routes import (
+    to_date,
+    parse_coordinates,
+    add_marker,
+    add_report_to_db,
+    get_all_markers,
+)
 
 
 class BasicsTestCase(unittest.TestCase):
@@ -70,12 +76,30 @@ class BasicsTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue("Точка добавлена!" in response.get_data(as_text=True))
 
-    def test_success_to_date(self):
-        """Success test func to convert string from url argument named 'date' to date object."""
+    def test_to_date(self):
+        """Test success and fails func to convert string from url argument named 'date' to date object."""
         result = to_date("2022-08-20")
         self.assertIsInstance(obj=result, cls=date)
 
-    def test_fail_to_date(self):
-        """Fails test func to convert string from url argument named 'date' to date object."""
         with self.assertRaises(ValueError):
             to_date("2022.08.20")
+
+    def test_parse_coordinates(self):
+        """Test success and fails func to parse coordinates gotten from html form."""
+        result = parse_coordinates("51.5505,23.7752")
+        self.assertIsInstance(obj=result, cls=list)
+        self.assertTrue(len(result) == 2)
+        self.assertEqual(result, ["51.5505", "23.7752"])
+
+        result = parse_coordinates("lat:51.5505 lng:23.7752")
+        self.assertIsInstance(obj=result, cls=list)
+        self.assertTrue(len(result) == 2)
+        self.assertEqual(result, ["51.5505", "23.7752"])
+
+        with current_app.test_request_context():
+            with self.assertRaises(ValueError):
+                parse_coordinates("1.5505,223.7752")
+
+        with current_app.test_request_context():
+            with self.assertRaises(IndexError):
+                parse_coordinates("51.5505")
