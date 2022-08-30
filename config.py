@@ -1,12 +1,15 @@
 """Config file for Flask app instances."""
 
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY") or "hard-to-guess-string"
+    SECRET_KEY = os.getenv("SECRET_KEY", "hard-to-guess-string")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     @staticmethod
@@ -16,16 +19,16 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DEV_DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = os.getenv("DEV_DATABASE_URL")
 
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get("TEST_DATABASE_URL") or "sqlite://"
+    SQLALCHEMY_DATABASE_URI = os.getenv("TEST_DATABASE_URL", "sqlite://")
 
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "postgresql://")
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "postgresql://")
     if SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
         SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace(
             "postgres://", "postgresql://", 1

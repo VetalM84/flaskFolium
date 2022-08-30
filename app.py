@@ -2,8 +2,14 @@
 
 import os
 
+from dotenv import load_dotenv
+
 from maps import create_app
 
-app = create_app(os.getenv("FLASK_CONFIG", "default"))
+load_dotenv()
 
-app.run()
+app = create_app(os.getenv("FLASK_CONFIG", "default"))
+app.app_context().push()
+
+if __name__ == "__main__":
+    app.run()
