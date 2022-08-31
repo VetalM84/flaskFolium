@@ -7,6 +7,7 @@ from flask import current_app
 from folium import folium
 
 from maps import create_app, db
+from maps.models import Report
 
 from maps.routes import (
     to_date,
@@ -25,9 +26,18 @@ class BasicsTestCase(unittest.TestCase):
         self.app = create_app("testing")
         self.app_context = self.app.app_context()
         self.app_context.push()
-        db.create_all()
         self.current_map = folium.Map(location=(50.45, 30.52))
         self.client = self.app.test_client(use_cookies=True)
+
+        report = Report(
+            latitude=50.45,
+            longitude=30.52,
+            color="red",
+            comment="comment",
+            ip="127.0.0.1",
+        )
+        db.session.add(report)
+        db.session.commit()
 
     def tearDown(self):
         """Execute after unit test. Drop DB, session, app."""
