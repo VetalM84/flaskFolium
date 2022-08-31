@@ -4,6 +4,7 @@ import unittest
 from datetime import date
 
 from flask import current_app
+from folium import folium
 
 from maps import create_app, db
 
@@ -25,6 +26,7 @@ class BasicsTestCase(unittest.TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
+        self.current_map = folium.Map(location=(50.45, 30.52))
         self.client = self.app.test_client(use_cookies=True)
 
     def tearDown(self):
@@ -100,6 +102,20 @@ class BasicsTestCase(unittest.TestCase):
             with self.assertRaises(ValueError):
                 parse_coordinates("1.5505,223.7752")
 
-        with current_app.test_request_context():
             with self.assertRaises(IndexError):
                 parse_coordinates("51.5505")
+
+    def test_add_marker(self):
+        """Test success and fails func to add a marker to the map."""
+        with current_app.test_request_context():
+            result = add_marker(
+                current_map=self.current_map,
+                location="51.5505",
+                color="red",
+                popup="test",
+                tooltip="test",
+            )
+            self.assertIsNone(result)
+
+            with self.assertRaises(Exception):
+                result()
