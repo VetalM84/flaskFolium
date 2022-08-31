@@ -129,3 +129,8 @@ class BasicsTestCase(unittest.TestCase):
 
             with self.assertRaises(Exception):
                 result()
+
+    def test_get_all_markers(self):
+        """Test func to retrieve all records from DB filtering by date added."""
+        result = get_all_markers(date.today())
+        self.assertEqual(len(result), 1)
