@@ -90,12 +90,12 @@ class BasicsTestCase(unittest.TestCase):
         """Test success and fails func to parse coordinates gotten from html form."""
         result = parse_coordinates("51.5505,23.7752")
         self.assertIsInstance(obj=result, cls=list)
-        self.assertTrue(len(result) == 2)
+        self.assertEqual(len(result), 2)
         self.assertEqual(result, ["51.5505", "23.7752"])
 
         result = parse_coordinates("lat:51.5505 lng:23.7752")
         self.assertIsInstance(obj=result, cls=list)
-        self.assertTrue(len(result) == 2)
+        self.assertEqual(len(result), 2)
         self.assertEqual(result, ["51.5505", "23.7752"])
 
         with current_app.test_request_context():
