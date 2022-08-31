@@ -26,6 +26,7 @@ class BasicsTestCase(unittest.TestCase):
         self.app = create_app("testing")
         self.app_context = self.app.app_context()
         self.app_context.push()
+        db.create_all()
         self.current_map = folium.Map(location=(50.45, 30.52))
         self.client = self.app.test_client(use_cookies=True)
 
@@ -134,3 +135,12 @@ class BasicsTestCase(unittest.TestCase):
         """Test func to retrieve all records from DB filtering by date added."""
         result = get_all_markers(date.today())
         self.assertEqual(len(result), 1)
+
+    def test_add_report_to_db(self):
+        result = add_report_to_db(
+            latitude=50.45,
+            longitude=30.52,
+            color="red",
+            comment="comment",
+        )
+        self.assertIsNone(result)
