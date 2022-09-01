@@ -6,6 +6,7 @@ from datetime import date, datetime, timedelta
 import folium
 import pytz
 from flask import flash, render_template, request, Blueprint
+from folium import Popup
 from folium.features import LatLngPopup
 from folium.plugins import Fullscreen, LocateControl
 from jinja2 import Template
@@ -191,7 +192,7 @@ def add_marker(current_map: object, location, color: str, popup: str, tooltip: s
     try:
         folium.CircleMarker(
             location=location,
-            popup=popup,
+            popup=Popup(html=popup, max_width=300),
             tooltip=tooltip,
             radius=7,
             fill_color=color,
