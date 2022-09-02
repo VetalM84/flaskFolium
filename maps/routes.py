@@ -199,7 +199,7 @@ def add_marker(current_map: object, location, color: str, popup: str, tooltip: s
             color="gray",
             fill_opacity=0.6,
         ).add_to(current_map)
-    except Exception as e:
+    except ValueError as e:
         flash(str(e), category="error")
         # app.logger.error(e)
 
