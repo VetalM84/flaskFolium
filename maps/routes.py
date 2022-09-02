@@ -160,7 +160,7 @@ def index():
     )
 
 
-def parse_coordinates(coordinates: str):
+def parse_coordinates(coordinates: str) -> list[str]:
     """Parse coordinates gotten from html form. Return a list of coordinates."""
     coordinates_cleaned = "".join(
         e for e in coordinates.strip() if e.isdigit() or e in (",", ".", " ")
