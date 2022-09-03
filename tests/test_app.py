@@ -100,14 +100,14 @@ class BasicsTestCase(unittest.TestCase):
     def test_parse_coordinates(self):
         """Test success and fails func to parse coordinates gotten from html form."""
         result = parse_coordinates("51.5505,23.7752")
-        self.assertIsInstance(obj=result, cls=list)
+        self.assertIsInstance(obj=result, cls=tuple)
         self.assertEqual(len(result), 2)
-        self.assertEqual(result, ["51.5505", "23.7752"])
+        self.assertEqual(result, (51.5505, 23.7752))
 
         result = parse_coordinates("lat:51.5505 lng:23.7752")
-        self.assertIsInstance(obj=result, cls=list)
+        self.assertIsInstance(obj=result, cls=tuple)
         self.assertEqual(len(result), 2)
-        self.assertEqual(result, ["51.5505", "23.7752"])
+        self.assertEqual(result, (51.5505, 23.7752))
 
         with current_app.test_request_context():
             with self.assertRaises(ValueError):
@@ -118,18 +118,26 @@ class BasicsTestCase(unittest.TestCase):
 
     def test_add_marker(self):
         """Test success and fails func to add a marker to the map."""
-        with current_app.test_request_context():
-            result = add_marker(
+        try:
+            add_marker(
                 current_map=self.current_map,
-                location="51.5505",
+                location=(51.5505, 31.0000),
                 color="red",
                 popup="test",
                 tooltip="test",
             )
-            self.assertIsNone(result)
+        except Exception as e:
+            self.fail(f"add_marker() raised exception {e}!")
 
-            with self.assertRaises(Exception):
-                result()
+        with current_app.test_request_context():
+            with self.assertRaises(ValueError):
+                add_marker(
+                    current_map=self.current_map,
+                    location=(46.46444,),
+                    color="red",
+                    popup="test",
+                    tooltip="test",
+                )
 
     def test_get_all_markers(self):
         """Test func to retrieve all records from DB filtering by date added."""

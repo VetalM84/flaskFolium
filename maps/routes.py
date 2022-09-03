@@ -130,10 +130,10 @@ def index():
         # add marker to the map
         add_marker(
             current_map=current_map,
-            location=[
+            location=(
                 parsed_coordinates[0],
                 parsed_coordinates[1],
-            ],
+            ),
             color=color,
             popup=comment if comment else datetime.now().strftime("%H:%M"),
             tooltip=datetime.now().strftime("%H:%M"),
@@ -160,7 +160,7 @@ def index():
     )
 
 
-def parse_coordinates(coordinates: str) -> list[str]:
+def parse_coordinates(coordinates: str) -> tuple[float, ...]:
     """Parse coordinates gotten from html form. Return a list of coordinates."""
     coordinates_cleaned = "".join(
         e for e in coordinates.strip() if e.isdigit() or e in (",", ".", " ")
@@ -184,24 +184,20 @@ def parse_coordinates(coordinates: str) -> list[str]:
                 )
                 raise ValueError("Can't parse coordinates.")
     # app.logger.debug(coordinates_cleaned)
-    return coordinates_cleaned.split(",")
+    return tuple(float(i) for i in coordinates_cleaned.split(","))
 
 
-def add_marker(current_map: object, location, color: str, popup: str, tooltip: str):
+def add_marker(current_map: object, location: tuple[float, float], color: str, popup: str, tooltip: str):
     """Add a marker to the map."""
-    try:
-        folium.CircleMarker(
-            location=location,
-            popup=Popup(html=popup, max_width=300),
-            tooltip=tooltip,
-            radius=7,
-            fill_color=color,
-            color="gray",
-            fill_opacity=0.6,
-        ).add_to(current_map)
-    except ValueError as e:
-        flash(str(e), category="error")
-        # app.logger.error(e)
+    folium.CircleMarker(
+        location=location,
+        popup=Popup(html=popup, max_width=300),
+        tooltip=tooltip,
+        radius=7,
+        fill_color=color,
+        color="gray",
+        fill_opacity=0.6,
+    ).add_to(current_map)
 
 
 # @cache.cached(timeout=30, key_prefix="all_markers")
