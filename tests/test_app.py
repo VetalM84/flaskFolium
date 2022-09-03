@@ -1,19 +1,17 @@
 """Test cases for frontend."""
 
 import unittest
-from datetime import date
+from datetime import date, datetime
 
 from flask import current_app
 from folium import folium
 
 from maps import create_app, db
 from maps.models import Report
-
 from maps.routes import (
     to_date,
     parse_coordinates,
     add_marker,
-    add_report_to_db,
     get_all_markers,
 )
 
@@ -62,7 +60,8 @@ class BasicsTestCase(unittest.TestCase):
 
     def test_index_with_date_page(self):
         """Test index page with argument named 'date'."""
-        response = self.client.get("/?date=2022-08-20")
+        today = datetime.strftime(datetime.today().date(), "%Y-%m-%d")
+        response = self.client.get(f"/?date={today}")
         self.assertEqual(response.status_code, 200)
 
     def test_about_page(self):
@@ -143,12 +142,3 @@ class BasicsTestCase(unittest.TestCase):
         """Test func to retrieve all records from DB filtering by date added."""
         result = get_all_markers(date.today())
         self.assertEqual(len(result), 1)
-
-    def test_add_report_to_db(self):
-        result = add_report_to_db(
-            latitude=50.45,
-            longitude=30.52,
-            color="red",
-            comment="comment",
-        )
-        self.assertIsNone(result)
