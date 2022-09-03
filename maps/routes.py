@@ -187,7 +187,13 @@ def parse_coordinates(coordinates: str) -> tuple[float, ...]:
     return tuple(float(i) for i in coordinates_cleaned.split(","))
 
 
-def add_marker(current_map: object, location: tuple[float, float], color: str, popup: str, tooltip: str):
+def add_marker(
+    current_map: object,
+    location: tuple[float, float],
+    color: str,
+    popup: str,
+    tooltip: str,
+):
     """Add a marker to the map."""
     folium.CircleMarker(
         location=location,
@@ -201,7 +207,7 @@ def add_marker(current_map: object, location: tuple[float, float], color: str, p
 
 
 # @cache.cached(timeout=30, key_prefix="all_markers")
-def get_all_markers(request_date):
+def get_all_markers(request_date) -> list:
     """Retrieve all records from DB filtering by date added."""
     try:
         return Report.query.filter(func.date(Report.created_at) == request_date).all()
@@ -210,12 +216,12 @@ def get_all_markers(request_date):
         # app.logger.error(e)
 
 
-def add_report_to_db(latitude, longitude, color: str, comment: str):
+def add_report_to_db(latitude: float, longitude: float, color: str, comment: str):
     """Add a new report to the DB."""
     try:
         report = Report(
-            latitude=float(latitude),
-            longitude=float(longitude),
+            latitude=latitude,
+            longitude=longitude,
             color=color,
             comment=comment,
             ip=request.remote_addr,
@@ -230,7 +236,7 @@ def add_report_to_db(latitude, longitude, color: str, comment: str):
         # app.logger.error(e, "Unable to save marker to DB.")
 
 
-def to_date(date_string: str):
+def to_date(date_string: str) -> date:
     """Convert string from url argument named 'date' to date object."""
     date_object = datetime.strptime(date_string, "%Y-%m-%d").date()
     if isinstance(date_object, date):
